@@ -72,6 +72,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
 st.space("medium")
 
 # horizontal placement of different game parts
@@ -79,12 +80,23 @@ col1, col2, col3 = st.columns([1, 2, 1],wrap=False)
 
 # visualization of hangman image (later animation based on game status)
 with col1:
+    if "wrong_guesses" not in st.session_state:
+      st.session_state.wrong_guesses = ""
+    if len(st.session_state.wrong_guesses) == 0:
+      link = "Hangman13.jpg"
+    elif len(st.session_state.wrong_guesses) > 0:
+      link = "Hangman" + str(len(st.session_state.wrong_guesses)) + ".jpg"
+    #link = "Hangman6.jpg"
     st.image(
-    "hangman.png",
-    caption="your current closeness level to death",
+      link,
+      caption="your current closeness level to death",
 )
 # letter guessing input
 with col2:
+    letter = ""
+    letters = st.chat_input("Pick a letter you think is part of this word")
+    if letters:
+      letter = letters
     
     # hardcoded rn, later provided by ai, max 10 letters
     word = "outerspace"
@@ -103,13 +115,16 @@ with col2:
   
 
     # letter input through player
-    letter = st.text_input(f"**Pick a letter you think is part of this word:**")
+    #letter = st.text_input(f"**Pick a letter you think is part of this word:**")
     st.session_state.letterlist.extend(letter)
     # list of indices of correct letters
     indices = [i for i, ch in enumerate(word) if ch == letter]
     st.session_state.indiceslist.extend(indices)
     if letter in word:
        st.session_state.correctlist.extend(letter)
+    #st.session_state.wrong_guesses = st.session_state.letterlist not in st.session_state.correctlist
+    #list(set(list_2).difference(list_1))
+    st.session_state.wrong_guesses = list(set(st.session_state.letterlist).difference(st.session_state.correctlist))
 
     st.space(size="medium")
 
@@ -145,7 +160,7 @@ with col2:
     num_squares = len(word)
     # one square per letter
     inner_squares = "".join([
-        f'<div style="width: 60px; height: 5px; background-color:'
+        f'<div style="width: 57px; height: 5px; background-color:'
         f' {colors[i % len(colors)]}; border-radius: 8px;"></div>'
         for i in range(num_squares)
     ])
@@ -164,7 +179,6 @@ with col2:
     # discovery if right or wrong guess
     if letter:
       st.write(f"You think '{letter}' is a good choice?")
-      #st.session_state.letterlist.append(letter)
       time.sleep(3)
 
       if letter in word and len(letter) == 1 and letter.isalpha() and st.session_state.letterlist.count(letter) == 1:
@@ -176,15 +190,17 @@ with col2:
       else:
         st.write(f":red[wrooong, sorry '{letter}' is not part of this word.]")
 
+st.markdown("""
+    <style>
+        [data-testid="column"]:nth-child(2){
+            background-color: lightgrey;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
 # list of letters already tried
 with col3:
     st.write("You already tried:")
-    # s = ''
-    # for i in st.session_state.letterlist:
-    #     if i not in s:
-    #       s +=  i + ", "
-    # #st.markdown(s)
-    # st.write(s)
 
     colored_letters = []
 
@@ -196,6 +212,9 @@ with col3:
 
     s = ", ".join(colored_letters)
     st.markdown(s)
+
+
+
 
 #let ai generate a fitting word 
 # save in variable
@@ -213,6 +232,8 @@ with col3:
 
 # option for new game 
 # clean session state
+
+# abbruchbedingung, wort komplett erraten
 
 # new word 
 if st.button("New Game"):

@@ -1,20 +1,8 @@
-list = []
-list_2 = []
+import streamlit as st
 
-letter = "b" 
-
-word = "regenbogen"
-
-indices_list = []
-temp_list = []
-#indices_list = [i for i, char in enumerate(word) if char == letter] 
-
-indices_list = [i for i, ch in enumerate(word) if ch == letter]
-temp_list.extend(indices_list)
-#indices_list.append(indices)
-
-print(indices_list, temp_list)
-        
-
-
-
+guesses = 6
+link = "'"+"Hangman" + str(6) + ".jpg" + "'"
+st.image(
+    link,
+    caption="your current closeness level to death",
+)

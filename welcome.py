@@ -4,6 +4,8 @@ st.title("Welcome to :blue[Hangman]",
          icon=":material/thumb_up:",
          text_alignment="right")
 
+st.write("The Rules:")
+
 st.write("have fun")
 
 if st.button("Go to Game"):
