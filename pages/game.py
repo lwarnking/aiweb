@@ -117,13 +117,14 @@ with col2:
     # letter input through player
     #letter = st.text_input(f"**Pick a letter you think is part of this word:**")
     st.session_state.letterlist.extend(letter)
+    
     # list of indices of correct letters
     indices = [i for i, ch in enumerate(word) if ch == letter]
     st.session_state.indiceslist.extend(indices)
     if letter in word:
        st.session_state.correctlist.extend(letter)
-    #st.session_state.wrong_guesses = st.session_state.letterlist not in st.session_state.correctlist
-    #list(set(list_2).difference(list_1))
+    
+    # list of wrong guesses 
     st.session_state.wrong_guesses = list(set(st.session_state.letterlist).difference(st.session_state.correctlist))
 
     st.space(size="medium")
@@ -153,6 +154,12 @@ with col2:
       for index in st.session_state.indiceslist:
         columsss[index].markdown(template.substitute(name=word[index]), unsafe_allow_html=True)
 
+    
+    
+    
+    
+    
+    
     ## letter lines
     # color palette
     colors = ["#FF4B4B", "#0068C9", "#29B09D", "#FF8700"]
@@ -190,13 +197,6 @@ with col2:
       else:
         st.write(f":red[wrooong, sorry '{letter}' is not part of this word.]")
 
-st.markdown("""
-    <style>
-        [data-testid="column"]:nth-child(2){
-            background-color: lightgrey;
-        }
-    </style>
-    """, unsafe_allow_html=True)
 
 # list of letters already tried
 with col3:
@@ -240,4 +240,5 @@ if st.button("New Game"):
   st.session_state.letterlist.clear()
   st.session_state.correctlist.clear()
   st.session_state.indiceslist.clear()
+  st.session_state.wrong_guesses.clear()
   # option for word in same category or different
