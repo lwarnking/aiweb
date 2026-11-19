@@ -9,6 +9,23 @@ st.set_page_config(layout="wide")
 if "age" not in st.session_state:
     st.session_state.age = ""
 
+# list for all guessed letters
+if "letterlist" not in st.session_state:
+    st.session_state.letterlist = []
+
+# list for correctly guessed letters
+if "correctlist" not in st.session_state:
+    st.session_state.correctlist = []
+
+# list of correct letter indices
+if "indiceslist" not in st.session_state:
+    st.session_state.indiceslist = []
+
+# list of correct letter indices
+if "columnscount" not in st.session_state:
+    st.session_state.columnscount = 0
+
+
 
 # individual background images for each theme
 background_images = ""
@@ -72,6 +89,31 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# hardcoded rn, later provided by ai, max 10 letters
+word = "outerspace"
+
+# letter guessing input over chat bar below
+letter = ""
+letters = st.chat_input("Pick a letter you think is part of this word")
+if letters:
+  letter = letters
+
+# letter input through player
+#letter = st.text_input(f"**Pick a letter you think is part of this word:**")
+st.session_state.letterlist.extend(letter)
+
+# list of indices of correct letters
+indices = [i for i, ch in enumerate(word) if ch == letter and i not in st.session_state.indiceslist]
+st.session_state.indiceslist.extend(indices)
+if letter in word:
+    st.session_state.correctlist.extend(letter)
+
+# list of wrong guesses 
+st.session_state.wrong_guesses = list(set(st.session_state.letterlist).difference(st.session_state.correctlist))
+
+
+
+
 
 st.space("medium")
 
@@ -91,46 +133,10 @@ with col1:
       link,
       caption="your current closeness level to death",
 )
-# letter guessing input
 with col2:
-    letter = ""
-    letters = st.chat_input("Pick a letter you think is part of this word")
-    if letters:
-      letter = letters
-    
-    # hardcoded rn, later provided by ai, max 10 letters
-    word = "outerspace"
 
-    # list for all guessed letters
-    if "letterlist" not in st.session_state:
-        st.session_state.letterlist = []
-    
-    # list for correctly guessed letters
-    if "correctlist" not in st.session_state:
-        st.session_state.correctlist = []
-
-    # list of correct letter indices
-    if "indiceslist" not in st.session_state:
-        st.session_state.indiceslist = []
-  
-
-    # letter input through player
-    #letter = st.text_input(f"**Pick a letter you think is part of this word:**")
-    st.session_state.letterlist.extend(letter)
-    
-    # list of indices of correct letters
-    indices = [i for i, ch in enumerate(word) if ch == letter]
-    st.session_state.indiceslist.extend(indices)
-    if letter in word:
-       st.session_state.correctlist.extend(letter)
-    
-    # list of wrong guesses 
-    st.session_state.wrong_guesses = list(set(st.session_state.letterlist).difference(st.session_state.correctlist))
-
-    st.space(size="medium")
-
+    #word visualized
     st.write("Your word looks like this:")
-
 
     columsss = st.columns(10)
     for i, col in enumerate(columsss):
@@ -150,15 +156,10 @@ with col2:
           st.markdown(template.substitute(name='_'), unsafe_allow_html=True)
         
     # display letter if guessed
-    if len(st.session_state.letterlist) > 0:
+    if len(st.session_state.letterlist) > 0: 
       for index in st.session_state.indiceslist:
         columsss[index].markdown(template.substitute(name=word[index]), unsafe_allow_html=True)
 
-    
-    
-    
-    
-    
     
     ## letter lines
     # color palette
@@ -167,13 +168,13 @@ with col2:
     num_squares = len(word)
     # one square per letter
     inner_squares = "".join([
-        f'<div style="width: 57px; height: 5px; background-color:'
+        f'<div style="width: 20px; height: 5px; background-color:'
         f' {colors[i % len(colors)]}; border-radius: 8px;"></div>'
         for i in range(num_squares)
     ])
 
     html_squares = f"""
-    <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 22px; align-items: left;">
+    <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 65px; align-items: left;">
         {inner_squares}
     </div>
     """
