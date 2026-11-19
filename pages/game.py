@@ -9,7 +9,7 @@ st.set_page_config(layout="wide")
 if "age" not in st.session_state:
     st.session_state.age = ""
 
-# list for all guessed letters
+# list for all guessed letters/ multiple guessed letters are added multiple times
 if "letterlist" not in st.session_state:
     st.session_state.letterlist = []
 
@@ -21,11 +21,9 @@ if "correctlist" not in st.session_state:
 if "indiceslist" not in st.session_state:
     st.session_state.indiceslist = []
 
-# list of correct letter indices
-if "columnscount" not in st.session_state:
-    st.session_state.columnscount = 0
-
-
+# list of wrong guesses
+if "wrong_guesses" not in st.session_state:
+    st.session_state.wrong_guesses = ""
 
 # individual background images for each theme
 background_images = ""
@@ -98,8 +96,7 @@ letters = st.chat_input("Pick a letter you think is part of this word")
 if letters:
   letter = letters
 
-# letter input through player
-#letter = st.text_input(f"**Pick a letter you think is part of this word:**")
+# add letter to overall guess list
 st.session_state.letterlist.extend(letter)
 
 # list of indices of correct letters
@@ -120,15 +117,13 @@ st.space("medium")
 # horizontal placement of different game parts
 col1, col2, col3 = st.columns([1, 2, 1],wrap=False)
 
-# visualization of hangman image (later animation based on game status)
+# visualization of hangman image based on game status
 with col1:
-    if "wrong_guesses" not in st.session_state:
-      st.session_state.wrong_guesses = ""
+    # start image
     if len(st.session_state.wrong_guesses) == 0:
-      link = "Hangman13.jpg"
+      link = "happycat.png"
     elif len(st.session_state.wrong_guesses) > 0:
       link = "Hangman" + str(len(st.session_state.wrong_guesses)) + ".jpg"
-    #link = "Hangman6.jpg"
     st.image(
       link,
       caption="your current closeness level to death",
@@ -179,7 +174,7 @@ with col2:
     </div>
     """
 
-    # Render the HTML inside st.markdown
+    # Render the HTML
     st.markdown(html_squares, unsafe_allow_html=True)
 
     st.space("medium")
