@@ -1,12 +1,18 @@
 import streamlit as st
 
-st.title("Welcome to :blue[Hangman]", 
-         icon=":material/thumb_up:",
-         text_alignment="right")
+col1, col2 = st.columns(2)
 
-st.write("The Rules:")
+with col1:
+  st.image("Hangman14.jpg", width=300)
 
-st.write("have fun")
+with col2:
+  st.header(":blue[Hangman] through Time")
+  st.write("Have ultimate fun!!!")
+  if st.button("**Play!**"):
+      st.switch_page("pages/choose your player.py") 
+  
+  if st.button("View Stats"):
+      st.switch_page("pages/stats.py")
 
-if st.button("Go to Game"):
-  st.switch_page("pages/choose your player.py") 
+ 
+  
