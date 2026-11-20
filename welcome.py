@@ -1,5 +1,13 @@
 import streamlit as st
 
+# counter for won games
+if "games_won" not in st.session_state:
+  st.session_state.games_won = 0
+
+# counter for lost games
+if "games_lost" not in st.session_state:
+  st.session_state.games_lost = 0
+
 col1, col2 = st.columns(2)
 
 with col1:
