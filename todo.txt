@@ -1,5 +1,6 @@
 [] game over
 [] game won
-[] 
-[]
-[]
+[] style choose_your_player page
+[] rulebook
+[] openai connection (retrieve words of max 10 letters for specific rubrik from ai)
+[] stats

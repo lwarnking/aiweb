@@ -10,6 +10,9 @@ if "age" not in st.session_state:
     st.session_state.age = ""
 
 # list for all guessed letters/ multiple guessed letters are added multiple times
+if "guesslist" not in st.session_state:
+    st.session_state.guesslist = []
+
 if "letterlist" not in st.session_state:
     st.session_state.letterlist = []
 
@@ -73,6 +76,7 @@ st.markdown(page_element, unsafe_allow_html=True)
 
 
 # if page crashes and session_states are lost
+game_over = False
 if not tostop == "no":
   st.set_page_config(layout="centered")
   st.warning('Oops, there has been a problem. Please go back in time and restart the game.')
@@ -94,16 +98,24 @@ word = "outerspace"
 letter = ""
 letters = st.chat_input("Pick a letter you think is part of this word")
 if letters:
-  letter = letters
+  letter = letters.lower()
 
 # add letter to overall guess list
-st.session_state.letterlist.extend(letter)
+st.session_state.guesslist.extend(letter)
+
+# add valid entries to letter list
+if len(letter) == 1 and letter.isalpha and letter not in st.session_state.letterlist:
+  st.session_state.letterlist.extend(letter)
 
 # list of indices of correct letters
 indices = [i for i, ch in enumerate(word) if ch == letter and i not in st.session_state.indiceslist]
 st.session_state.indiceslist.extend(indices)
 if letter in word:
     st.session_state.correctlist.extend(letter)
+    if len(st.session_state.correctlist) == (len(word))-1:
+        game_over = True
+        st.success("Juchuuuu! You guessed the word correctly!")
+        st.button("New Game", on_click=lambda: st.switch_page("pages/choose your player.py"))
 
 # list of wrong guesses 
 st.session_state.wrong_guesses = list(set(st.session_state.letterlist).difference(st.session_state.correctlist))
@@ -114,11 +126,12 @@ st.session_state.wrong_guesses = list(set(st.session_state.letterlist).differenc
 
 st.space("medium")
 
-# horizontal placement of different game parts
-col1, col2, col3 = st.columns([1, 2, 1],wrap=False)
+if not game_over:
+  # horizontal placement of different game parts
+  col1, col2, col3 = st.columns([1, 2, 1],wrap=False)
 
-# visualization of hangman image based on game status
-with col1:
+  # visualization of hangman image based on game status
+  with col1:
     # start image
     if len(st.session_state.wrong_guesses) == 0:
       link = "happycat.png"
@@ -127,8 +140,8 @@ with col1:
     st.image(
       link,
       caption="your current closeness level to death",
-)
-with col2:
+  )
+  with col2:
 
     #word visualized
     st.write("Your word looks like this:")
@@ -194,8 +207,8 @@ with col2:
         st.write(f":red[wrooong, sorry '{letter}' is not part of this word.]")
 
 
-# list of letters already tried
-with col3:
+  # list of letters already tried
+  with col3:
     st.write("You already tried:")
 
     colored_letters = []
@@ -212,29 +225,30 @@ with col3:
 
 
 
-#let ai generate a fitting word 
-# save in variable
-# animate fitting letter strokes
+  #let ai generate a fitting word 
+  # save in variable
+  # animate fitting letter strokes
 
 
-# if letter in word = yay
-# if not = oh no + hangman animation + sound?
+  # if letter in word = yay
+  # if not = oh no + hangman animation + sound?
 
 
-# let ai pick a word
+  # let ai pick a word
 
-# give option to get more background info on word
-# - stats
+  # give option to get more background info on word
+  # - stats
 
-# option for new game 
-# clean session state
+  # option for new game 
+  # clean session state
 
-# abbruchbedingung, wort komplett erraten
+  # abbruchbedingung, wort komplett erraten
 
-# new word 
-if st.button("New Game"):
-  st.session_state.letterlist.clear()
-  st.session_state.correctlist.clear()
-  st.session_state.indiceslist.clear()
-  st.session_state.wrong_guesses.clear()
-  # option for word in same category or different
+  # new word 
+  if st.button("New Game"):
+    game_over = True
+    st.session_state.letterlist.clear()
+    st.session_state.correctlist.clear()
+    st.session_state.indiceslist.clear()
+    st.session_state.wrong_guesses.clear()
+    # option for word in same category or different
