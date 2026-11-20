@@ -27,10 +27,13 @@ if "indiceslist" not in st.session_state:
 
 # list of wrong guesses
 if "wrong_guesses" not in st.session_state:
-    st.session_state.wrong_guesses = ""
+    st.session_state.wrong_guesses = []
 
-games_won = 0
-games_lost = 0
+if "games_won" not in st.session_state:
+  st.session_state.games_won = 0
+
+if "games_lost" not in st.session_state:
+  st.session_state.games_lost = 0
 
 # individual background images for each theme
 background_images = ""
@@ -96,7 +99,7 @@ st.markdown(
 )
 
 # hardcoded rn, later provided by ai, max 10 letters
-word = "mangoooo"
+word = "ab"
 
 # letter guessing input over chat bar below
 letter = ""
@@ -120,12 +123,12 @@ if letter in word:
   # game over, won
   if len(st.session_state.correctlist) == len(set(word)):
     game_over = True
-    games_won = games_won + 1
+    games_won = st.session_state.games_won + 1
     solved = word.upper()
     st.success(f"Juchuuuu, { solved }! You guessed the word correctly!")
 
     # append the stats for the leaderboard
-    st.session_state.stats = st.session_state.stats.append([games_won, st.session_state.wrong_guesses])
+    st.session_state.stats.append([st.session_state.games_won, st.session_state.games_lost, st.session_state.wrong_guesses])
 
     # clear all lists for a new game
     if st.button("New Game"):
@@ -135,7 +138,7 @@ if letter in word:
       st.session_state.indiceslist.clear()
       st.session_state.wrong_guesses.clear()
       st.stop
-
+      game_over = False
 
 
 # list of wrong guesses 
@@ -144,19 +147,17 @@ st.session_state.wrong_guesses = list(set(st.session_state.letterlist).differenc
 # game over, lost
 if len(st.session_state.wrong_guesses) > 14:
   game_over = True
-  games_lost = games_lost + 1
+  games_lost = st.session_state.games_lost + 1
   st.warning('OH NO, you died :(')
-  st.session_state.stats = st.session_state.stats.append([games_won, st.session_state.wrong])
+  st.session_state.stats.append([st.session_state.games_won, st.session_state.games_lost, st.session_state.wrong_guesses])
 
-
+  # start a new game
   if st.button("New Game", on_click=lambda: st.switch_page("pages/choose your player.py")):
       st.session_state.letterlist.clear()
       st.session_state.correctlist.clear()
       st.session_state.indiceslist.clear()
       st.session_state.wrong_guesses.clear()
-
-
-
+      game_over = False
 
 
 st.space("medium")
@@ -201,27 +202,7 @@ if not game_over:
       for index in st.session_state.indiceslist:
         columsss[index].markdown(template.substitute(name=word[index]), unsafe_allow_html=True)
 
-
-    ## letter lines
-    # color palette
-    colors = ["#FF4B4B", "#0068C9", "#29B09D", "#FF8700"]
-
-    num_squares = len(word)
-    # one square per letter
-    inner_squares = "".join([
-        f'<div style="width: 20px; height: 5px; background-color:'
-        f' {colors[i % len(colors)]}; border-radius: 8px;"></div>'
-        for i in range(num_squares)
-    ])
-
-    html_squares = f"""
-    <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 65px; align-items: left;">
-        {inner_squares}
-    </div>
-    """
-
-    # Render the HTML
-    st.markdown(html_squares, unsafe_allow_html=True)
+ 
 
     st.space("medium")
 

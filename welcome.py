@@ -14,5 +14,7 @@ with col2:
   if st.button("View Stats"):
       st.switch_page("pages/stats.py")
 
- 
+# data of games played
+if "stats" not in st.session_state:
+    st.session_state.stats = [] 
   
