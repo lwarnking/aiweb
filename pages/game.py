@@ -99,7 +99,7 @@ word = "mangoooo"
 
 # letter guessing input over chat bar below
 letter = ""
-letters = st.chat_input("Pick a letter you think is part of this word")
+letters = st.chat_input("Pick a letter you think is part of this word", max_chars = 1)
 if letters:
   letter = letters.lower()
 

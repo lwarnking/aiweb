@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 
-st. header("Stats")
+st.header("Stats")
 
 # data of games played
 stats = np.array([])
