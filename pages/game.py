@@ -28,6 +28,9 @@ if "indiceslist" not in st.session_state:
 if "wrong_guesses" not in st.session_state:
     st.session_state.wrong_guesses = ""
 
+games_won = 0
+games_lost = 0
+
 # individual background images for each theme
 background_images = ""
 if st.session_state.age == "stoneage":
@@ -92,7 +95,7 @@ st.markdown(
 )
 
 # hardcoded rn, later provided by ai, max 10 letters
-word = "outerspace"
+word = "mangoooo"
 
 # letter guessing input over chat bar below
 letter = ""
@@ -111,14 +114,35 @@ if len(letter) == 1 and letter.isalpha and letter not in st.session_state.letter
 indices = [i for i, ch in enumerate(word) if ch == letter and i not in st.session_state.indiceslist]
 st.session_state.indiceslist.extend(indices)
 if letter in word:
-    st.session_state.correctlist.extend(letter)
-    if len(st.session_state.correctlist) == (len(word))-1:
-        game_over = True
-        st.success("Juchuuuu! You guessed the word correctly!")
-        st.button("New Game", on_click=lambda: st.switch_page("pages/choose your player.py"))
+  st.session_state.correctlist.extend(letter)
+  # game over, won
+  if len(st.session_state.correctlist) == len(set(word)):
+    game_over = True
+    games_won = games_won + 1
+    solved = word.upper()
+    st.success(f"Juchuuuu, { solved }! You guessed the word correctly!")
+    if st.button("New Game"):
+      st.switch_page("pages/choose your player.py")
+      st.session_state.letterlist.clear()
+      st.session_state.correctlist.clear()
+      st.session_state.indiceslist.clear()
+      st.session_state.wrong_guesses.clear()
+      st.stop
+
+
 
 # list of wrong guesses 
 st.session_state.wrong_guesses = list(set(st.session_state.letterlist).difference(st.session_state.correctlist))
+# game over, lost
+if len(st.session_state.wrong_guesses) > 14:
+  game_over = True
+  games_lost = games_lost + 1
+  st.warning('OH NO, you died :(')
+  if st.button("New Game", on_click=lambda: st.switch_page("pages/choose your player.py")):
+      st.session_state.letterlist.clear()
+      st.session_state.correctlist.clear()
+      st.session_state.indiceslist.clear()
+      st.session_state.wrong_guesses.clear()
 
 
 
@@ -142,11 +166,10 @@ if not game_over:
       caption="your current closeness level to death",
   )
   with col2:
-
     #word visualized
     st.write("Your word looks like this:")
 
-    columsss = st.columns(10)
+    columsss = st.columns(len(word))
     for i, col in enumerate(columsss):
         st.markdown("""
         <style>
@@ -168,7 +191,7 @@ if not game_over:
       for index in st.session_state.indiceslist:
         columsss[index].markdown(template.substitute(name=word[index]), unsafe_allow_html=True)
 
-    
+
     ## letter lines
     # color palette
     colors = ["#FF4B4B", "#0068C9", "#29B09D", "#FF8700"]
@@ -195,13 +218,13 @@ if not game_over:
     # discovery if right or wrong guess
     if letter:
       st.write(f"You think '{letter}' is a good choice?")
-      time.sleep(3)
+      time.sleep(1)
 
-      if letter in word and len(letter) == 1 and letter.isalpha() and st.session_state.letterlist.count(letter) == 1:
+      if letter in word and len(letter) == 1 and letter.isalpha() and st.session_state.guesslist.count(letter) == 1:
         st.write(f":green[yay, you are right '{letter}' is part of this word!]")
       elif len(letter) != 1 or not letter.isalpha():
         st.write(f"invalid entry. pls try again :)")
-      elif st.session_state.letterlist.count(letter) > 1: 
+      elif st.session_state.guesslist.count(letter) > 1: 
         st.write(f"you tried '{letter}' before")
       else:
         st.write(f":red[wrooong, sorry '{letter}' is not part of this word.]")
@@ -225,30 +248,33 @@ if not game_over:
 
 
 
-  #let ai generate a fitting word 
-  # save in variable
-  # animate fitting letter strokes
+    #let ai generate a fitting word 
+    # save in variable
+    # animate fitting letter strokes
 
 
-  # if letter in word = yay
-  # if not = oh no + hangman animation + sound?
+    # if letter in word = yay
+    # if not = oh no + hangman animation + sound?
 
 
-  # let ai pick a word
+    # let ai pick a word
 
-  # give option to get more background info on word
-  # - stats
+    # give option to get more background info on word
+    # - stats
 
-  # option for new game 
-  # clean session state
+    # option for new game 
+    # clean session state
 
-  # abbruchbedingung, wort komplett erraten
+    # abbruchbedingung, wort komplett erraten
+    # game over
+
 
   # new word 
-  if st.button("New Game"):
+  if st.button("Restart Game"):
     game_over = True
     st.session_state.letterlist.clear()
     st.session_state.correctlist.clear()
     st.session_state.indiceslist.clear()
     st.session_state.wrong_guesses.clear()
     # option for word in same category or different
+
