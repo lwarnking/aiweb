@@ -1,6 +1,7 @@
 import streamlit as st
 import time
 from string import Template
+import numpy as np
 
 # page layout full screen
 st.set_page_config(layout="wide")
@@ -115,12 +116,18 @@ indices = [i for i, ch in enumerate(word) if ch == letter and i not in st.sessio
 st.session_state.indiceslist.extend(indices)
 if letter in word:
   st.session_state.correctlist.extend(letter)
+
   # game over, won
   if len(st.session_state.correctlist) == len(set(word)):
     game_over = True
     games_won = games_won + 1
     solved = word.upper()
     st.success(f"Juchuuuu, { solved }! You guessed the word correctly!")
+
+    # append the stats for the leaderboard
+    st.session_state.stats = st.session_state.stats.append([games_won, st.session_state.wrong_guesses])
+
+    # clear all lists for a new game
     if st.button("New Game"):
       st.switch_page("pages/choose your player.py")
       st.session_state.letterlist.clear()
@@ -133,11 +140,15 @@ if letter in word:
 
 # list of wrong guesses 
 st.session_state.wrong_guesses = list(set(st.session_state.letterlist).difference(st.session_state.correctlist))
+
 # game over, lost
 if len(st.session_state.wrong_guesses) > 14:
   game_over = True
   games_lost = games_lost + 1
   st.warning('OH NO, you died :(')
+  st.session_state.stats = st.session_state.stats.append([games_won, st.session_state.wrong])
+
+
   if st.button("New Game", on_click=lambda: st.switch_page("pages/choose your player.py")):
       st.session_state.letterlist.clear()
       st.session_state.correctlist.clear()
@@ -183,7 +194,6 @@ if not game_over:
 
         template = Template('<div class="large-snippet"><b>$name</b></div>')
         with col:
-          #st.markdown(template.substitute(name=''), unsafe_allow_html=True)
           st.markdown(template.substitute(name='_'), unsafe_allow_html=True)
         
     # display letter if guessed
@@ -223,7 +233,7 @@ if not game_over:
       if letter in word and len(letter) == 1 and letter.isalpha() and st.session_state.guesslist.count(letter) == 1:
         st.write(f":green[yay, you are right '{letter}' is part of this word!]")
       elif len(letter) != 1 or not letter.isalpha():
-        st.write(f"invalid entry. pls try again :)")
+        st.write(f"invalid entry. please try again :)")
       elif st.session_state.guesslist.count(letter) > 1: 
         st.write(f"you tried '{letter}' before")
       else:
